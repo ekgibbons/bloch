@@ -23,13 +23,17 @@ namespace py = boost::python;
 namespace np = boost::python::numpy;
 
 /* module function */
-np::ndarray BlochCardiacSat_wrap(const double sliceThickness, const unsigned int nValues,
-				 const unsigned int nExcitations, const double T1,
-				 const double T2, const unsigned int returnType)
+np::ndarray BlochCardiacSat_wrap(const double sliceThickness,
+				 const unsigned int nValues,
+				 const unsigned int nExcitations,
+				 const double T1,
+				 const double T2, const double heartRate,
+				 const unsigned int returnType)
+
 {
 
     arma::cx_vec signal = BlochCardiacSat(sliceThickness, nValues, nExcitations,
-					  T1, T2, returnType);
+					  T1, T2, heartRate, returnType);
 
     np::ndarray result = Arma2Numpy(signal);
 

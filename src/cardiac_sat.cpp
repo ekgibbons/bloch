@@ -9,9 +9,63 @@
 
 #include "cardiac_sat.hpp"
 
-arma::cx_vec BlochCardiacSat(const double sliceThickness, const unsigned int nValues,
+double FloatMod(double firstTerm, double secondTerm)
+{
+    if (firstTerm >= secondTerm)
+    {
+	firstTerm -= secondTerm;
+	firstTerm = FloatMod(firstTerm,secondTerm);
+    }
+
+    return firstTerm;
+}
+
+double CardiacMovement(double t, double heartRate)
+{
+
+    double beatLength, lengthSystole, tUse;
+    double zSystoleEnd, z, amplitude;
+
+    
+    double decayCoefficient = 0.06;
+    double recoveryCoefficient = 0.12;
+
+   
+    heartRate /= 60; // bps
+    beatLength = 1/(heartRate+1e-15);; // s
+    lengthSystole = 0.3; // s
+    amplitude = 0.01; // m
+
+    tUse = FloatMod(t, beatLength);
+    
+    z = 0;
+    if (t < lengthSystole)
+    {
+	z = amplitude*exp(-t/decayCoefficient);
+    }
+    if (t >= lengthSystole)
+    {
+	zSystoleEnd = amplitude*exp(-lengthSystole/decayCoefficient);
+	z = amplitude - (amplitude - zSystoleEnd)*
+	    exp(-(t - lengthSystole)/recoveryCoefficient);
+    }
+    
+    // printf("z: %f, tOrig: %f, tUse: %f\n",z,t,tUse);
+
+    if (heartRate == 0)
+    {
+	return amplitude;
+    }
+
+    
+    return z;
+}
+
+arma::cx_vec BlochCardiacSat(const double sliceThickness,
+			     const unsigned int nValues,
 			     const unsigned int nExcitations, const double T1,
-			     const double T2, const unsigned int returnType)
+			     const double T2, double heartRate,
+			     const unsigned int returnType)
 {
 
     printf("SIMULATION STARTING: cardiac saturation\n");
@@ -34,14 +88,18 @@ arma::cx_vec BlochCardiacSat(const double sliceThickness, const unsigned int nVa
     double areaRefocusingExcite = -(BWExcite*pulseWidthExcite)/(gamma2pi*sliceThickness);
 
     arma::mat spoiler = Spoiling();
+
+    double runningTime = 0.0; // s
+    double deltaTimeSat = 0.02; // s
+    double deltaTimeTR = 0.0025; // s
     
     arma::mat Relax(3,3);
     arma::vec Recover(3);
 
-    Relaxation(Relax,Recover,0.0025/2,T1,T2);
+    Relaxation(Relax,Recover,0.0025,T1,T2);
 
     arma::mat RecoverMat = arma::repmat(Recover,1,nValues);
-
+    
     arma::mat RelaxSat(3,3);
     arma::vec RecoverSat(3);
 
@@ -50,8 +108,8 @@ arma::cx_vec BlochCardiacSat(const double sliceThickness, const unsigned int nVa
     arma::mat RecoverSatMat = arma::repmat(RecoverSat,1,nValues);
 
     
-    arma::vec z = arma::linspace<arma::vec>(-sliceThickness*2.0,
-    					    sliceThickness*2.0,
+    arma::vec z = arma::linspace<arma::vec>(-sliceThickness*4.0,
+    					    sliceThickness*4.0,
     					    nValues);
     
     arma::mat M = arma::zeros<arma::mat>(3,nValues);
@@ -64,17 +122,31 @@ arma::cx_vec BlochCardiacSat(const double sliceThickness, const unsigned int nVa
     	M(2,ii) = 1;
     }    
 
+    // movement setup
+    double deltaZ = 0.0; // cm
+    double zShift = 0.0; // cm
+    double zShiftOld = 0.0; // cm
+    
     arma::mat RFExcite = RotationArbitrary(M_PI/2,initialPhase);
     M = RFExcite*M;
     M = spoiler*M;
 
-    M = RelaxSat*M + RecoverSatMat;	
-    
+    M = RelaxSat*M + RecoverSatMat;
+    runningTime += deltaTimeSat; 
+
+    zShift = CardiacMovement(runningTime,heartRate);
+
+    z += deltaZ;
+    zShiftOld = zShift;
+
     for (unsigned int excitationIndex = 0;
 	 excitationIndex < nExcitations;
 	 excitationIndex++)
     {
-	printf("\texcitation number: %i\n",excitationIndex);
+	if (excitationIndex % 20 == 0)
+	{
+	    printf("\texcitation number: %i\n",excitationIndex);
+	}
 	
 	// Excite
 	SLRRotation(M, 100*z, rfExcite, pulseTypeExcite, 
@@ -92,7 +164,14 @@ arma::cx_vec BlochCardiacSat(const double sliceThickness, const unsigned int nVa
 
 	M = spoiler*M;
 	
-	M = Relax*M + RecoverMat;	
+	M = Relax*M + RecoverMat;
+
+	runningTime += deltaTimeTR;
+	zShift = CardiacMovement(runningTime,heartRate);
+
+	deltaZ = zShift - zShiftOld;
+	z += deltaZ;
+	zShiftOld = zShift;
     } 
     
 

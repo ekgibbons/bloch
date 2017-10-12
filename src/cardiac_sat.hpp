@@ -5,8 +5,10 @@
 #define MXY 1
 #define MZ 2
 
-arma::cx_vec BlochCardiacSat(const double sliceThickness, const unsigned int nValues,
+arma::cx_vec BlochCardiacSat(const double sliceThickness,
+			     const unsigned int nValues,
 			     const unsigned int nExcitations, const double T1,
-			     const double T2, const unsigned int returnType);
+			     const double T2, double heartRate,
+			     const unsigned int returnType);
 
 # endif
