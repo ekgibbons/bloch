@@ -1,5 +1,5 @@
-from __future__ import division
-from __future__ import print_function
+# from __future__ import division
+# from __future__ import print_function
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 import bloch_cardiac
 
 
-sliceThickness = 0.008;
+sliceThickness = np.float64(0.008)
 nValues = int(10e3)
 nExcitations = 260
 T1 = 0.250

@@ -1,6 +1,6 @@
 TARGET = bloch_cardiac
 
-INSTALL_PATH = ~/python/modules/mri
+INSTALL_PATH = ~/python_utils/simulations
 
 SRCDIR = src
 OBJDIR = obj
@@ -13,16 +13,23 @@ INCUDES_HPP = $(wildcard $(SRCDIR)/*.hpp)
 OBJECTS_C    = $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 OBJECTS_CPP  = $(SOURCES_CPP:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
+# include base path
+BASE_INCLUDE = /home/mirl/egibbons/.conda/envs/ekg/include
+
+# library base path
+BASE_LIB = /home/mirl/egibbons/.conda/envs/ekg/lib
+
 # linear alebra libraries
-LINALG_LIBS=-lopenblas -latlas -larmadillo
+LINALG_LIBS=-lopenblas -larmadillo
 
 # location of the Python header files
-PYTHON_VERSION = 2.7
-PYTHON_INCLUDE = /usr/include/python$(PYTHON_VERSION)
+PYTHON_VERSION = 3.5
+PYTHON_INCLUDE = $(BASE_INCLUDE)/python$(PYTHON_VERSION)
 
 # location of the Boost Python include files and library
-BOOST_INC = /usr/include
-BOOST_LIB = /usr/local/lib
+# (this will vary based on what machine you are on, obviously)
+BOOST_INC = $(BASE_INCLUDE)
+BOOST_LIB = $(BASE_LIB)
 
 # boost libraries
 LIBRARY_PATH = -L$(BOOST_LIB)
@@ -47,10 +54,6 @@ $(OBJECTS_C): $(OBJDIR)/%.o : $(SRCDIR)/%.c
 
 $(OBJECTS_CPP): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
-
-# .PHONY: run
-# run: 	
-# 	python python/test_alsop.py
 
 .PHONY: install
 install:
