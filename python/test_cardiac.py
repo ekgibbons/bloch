@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 import bloch_cardiac
 
 
-sliceThickness = np.float64(0.008)
+sliceThickness = 0.008
 nValues = int(10e3)
 nExcitations = 260
 T1 = 0.250

@@ -9,22 +9,23 @@
 #ifndef __NUMPY_WRAPPERS_HPP__
 #define  __NUMPY_WRAPPERS_HPP__
 
-namespace py = boost::python;
-namespace np = boost::python::numpy;
+namespace np = pybind11;
 
-np::ndarray Arma2Numpy(const arma::cx_mat &inputMat);
-np::ndarray Arma2Numpy(const arma::cx_vec &inputVec);
-arma::vec Numpy2ArmaVec(const np::ndarray &input);
-np::ndarray Array2Numpy(double *array, int length);
-np::ndarray CArray2CNumpy(double *array, int length);
-void Numpy2Array(const np::ndarray &arrayNumpy,
-		 double *arrayOut,
-		 int length);
-void Numpy2CArray(const np::ndarray &arrayNumpy,
-		  double *arrayOut,
-		      int length);
-void CNumpy2CArray(const np::ndarray &arrayNumpy,
-		  double *arrayOut,
-		  int length);
+np::array CArma2CNumpy(const arma::cx_vec &inputVec);
+
+// np::ndarray Arma2Numpy(const arma::cx_mat &inputMat);
+// np::ndarray Arma2Numpy(const arma::cx_vec &inputVec);
+// arma::vec Numpy2ArmaVec(const np::ndarray &input);
+// np::ndarray Array2Numpy(double *array, int length);
+// np::ndarray CArray2CNumpy(double *array, int length);
+// void Numpy2Array(const np::ndarray &arrayNumpy,
+// 		 double *arrayOut,
+// 		 int length);
+// void Numpy2CArray(const np::ndarray &arrayNumpy,
+// 		  double *arrayOut,
+// 		      int length);
+// void CNumpy2CArray(const np::ndarray &arrayNumpy,
+// 		  double *arrayOut,
+// 		  int length);
 
 #endif
