@@ -4,8 +4,7 @@
 #include <vector> 
 #include <algorithm>
 
-#include <boost/python.hpp>
-#include <boost/python/numpy.hpp>
+#include <pybind11/pybind11.h>
 
 #include <armadillo>
 
@@ -18,9 +17,7 @@
 using boost::uint8_t;
 #endif
 
-
-namespace py = boost::python;
-namespace np = boost::python::numpy;
+namespace py = pybind11;
 
 /* module function */
 np::ndarray BlochCardiacSat_wrap(const double sliceThickness,
@@ -41,9 +38,9 @@ np::ndarray BlochCardiacSat_wrap(const double sliceThickness,
     
 }
 
-BOOST_PYTHON_MODULE(bloch_cardiac)
+PYBIND11_MODULE(bloch_cardiac, m)
 {
-    Py_Initialize();
-    np::initialize();
-    py::def("BlochCardiacSat",BlochCardiacSat_wrap);
+    m.doc() = "Cardiac bloch simulator for the DiBella cardiac perfusion pulse sequence";
+
+    m.def("BlochCardiacSat",&BlochCardiacSat_wrap,"The cardiac function...");
 }
