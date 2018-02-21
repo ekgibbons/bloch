@@ -10,8 +10,8 @@
 #include "echotrain_alsop.hpp"
 
 arma::cx_vec BlochFSEAlsop(const arma::vec &flips, unsigned int nValues, unsigned int etl,
-			   double initialPhase, unsigned int returnType, double T1, double T2,
-			   double esp)
+			   double initialPhase, unsigned int returnType, double T1,
+			   double T2, double esp)
 {
 
     printf("SIMULATION STARTING: alsop\n");
@@ -142,19 +142,6 @@ arma::cx_vec BlochFSEAlsop(const arma::vec &flips, unsigned int nValues, unsigne
     		100*sliceThickness/0.8);
     HardPrecession(M, z, 2*M_PI*(areaRefocusingExcite*0.56));
 
-    for (unsigned int zIndex = 0; zIndex < nValues; zIndex++)
-    {
-	Mxy(zIndex) = M(0,zIndex) + j*M(1,zIndex);
-	Mz(zIndex) = M(2,zIndex);
-    }
-    if (returnType == ECHOTRAIN)
-    {
-	return Mxy;
-    }
-    else
-    {
-	return Mz;
-    }    
 
 
 

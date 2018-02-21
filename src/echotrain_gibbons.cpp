@@ -159,7 +159,7 @@ arma::cx_vec BlochFSEGibbons(const arma::vec &flips, unsigned int nValues, unsig
     for (unsigned int ii = 0; ii < nValues; ++ii)
     {
         M(0,ii) = 0;
-	M(1,ii) = 0;
+    	M(1,ii) = 0;
         M(2,ii) = M(2,ii);
     }
 
@@ -242,19 +242,7 @@ arma::cx_vec BlochFSEGibbons(const arma::vec &flips, unsigned int nValues, unsig
     // s /= nyLocs;
 
     printf("\tsimulation complete\n");
-    
-    Relaxation(Relax,Recover,200.e3,T1,T2);
-    RecoverMat = arma::repmat(Recover,1,nValues);
-    M = Relax*M + RecoverMat;    
-
-
-    for (unsigned int zIndex = 0; zIndex < nValues; zIndex++)
-    {
-	Mxy(zIndex) = M(0,zIndex) + j*M(1,zIndex);
-	Mz(zIndex) = M(2,zIndex);
-    }
-
-    
+        
     // output
     arma::cx_vec out;
 

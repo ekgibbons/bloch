@@ -1,11 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-import bloch_fse
-import varflip
-import mydisplay
+from mri import blochsequence
+# import varflip
+# import mydisplay
 
-mydisplay.SetPlot()
+# mydisplay.SetPlot()
 
 number = 3
 
@@ -26,9 +26,6 @@ flipLast = 100.
 flipMax = 140.
 dbgFlag = 0
 
-flipsVariable = varflip.GenerateFlips(etl,esp,nMin,nLope,
-                                      flipFirst,flipMin,flipLope,flipLast,flipMax,
-                                      dbgFlag)
 flipsAlsop = 60.*np.ones((etl))
 flipsAlsop[0] = 142.2
 flipsAlsop[1] = 94.9
@@ -36,18 +33,25 @@ flipsAlsop[2] = 69.2
 flipsAlsop[3] = 63.0
 flipsAlsop[4] = 60.2
 
+flipsVariable = flipsAlsop
+# flipsVariable = varflip.GenerateFlips(etl,esp,nMin,nLope,
+#                                       flipFirst,flipMin,flipLope,flipLast,flipMax,
+#                                       dbgFlag)
+
+
+
 initialPhase = np.pi/4
 
-s1 = bloch_fse.BlochFSEAlsop(flipsAlsop.astype(float), nValues,
-                             etl, initialPhase, 0, T1, T2, esp)
-s1z = bloch_fse.BlochFSEAlsop(flipsAlsop.astype(float), nValues,
-                             etl, initialPhase, 1, T1, T2, esp)
+s1 = blochsequence.FSEAlsop(flipsAlsop.astype(float), nValues,
+                            etl, initialPhase, T1, T2, esp, 1)
+s1z = blochsequence.FSEAlsop(flipsAlsop.astype(float), nValues,
+                             etl, initialPhase, T1, T2, esp, 2)
 
 
-s2 = bloch_fse.BlochFSEGibbons(flipsVariable.astype(float), nValues,
-                               etl, initialPhase, 0, T1, T2, esp)
-s2z = bloch_fse.BlochFSEGibbons(flipsVariable.astype(float), nValues,
-                               etl, initialPhase, 1, T1, T2, esp)
+s2 = blochsequence.FSEGibbons(flipsVariable.astype(float), nValues,
+                              etl, initialPhase, T1, T2, esp, 1)
+s2z = blochsequence.FSEGibbons(flipsVariable.astype(float), nValues,
+                               etl, initialPhase, T1, T2, esp, 2)
 
 
 z = np.linspace(-3*5,3*5,nValues)
@@ -78,7 +82,7 @@ plt.grid()
 plt.ylim(-1.1,1.1)
 plt.savefig("alsop_%i.pdf" % number,bbox_inches="tight")
 
-print "alsop net magnetization: %f + j%f" % (np.mean(s1).real,np.mean(s1).imag)
+print("alsop net magnetization: %f + j%f" % (np.mean(s1).real,np.mean(s1).imag))
 
 plt.figure(figsize=(22,6))
 plt.subplot(1,3,1)
@@ -106,17 +110,17 @@ plt.grid()
 plt.ylim(-1.1,1.1)
 plt.savefig("gibbons_%i.pdf" % number,bbox_inches="tight")
 
-print "gibbons net magnetization: %f + j%f" % (np.mean(s2).real,np.mean(s2).imag)
+print("gibbons net magnetization: %f + j%f" % (np.mean(s2).real,np.mean(s2).imag))
 
 
 # counter = 1
 # plt.figure(figsize=(16,12))
 # for initialPhase in phases:
-#     s1 = bloch_fse.BlochFSEAlsop(flipsAlsop.astype(float), nValues,
+#     s1 = blochsequence.BlochFSEAlsop(flipsAlsop.astype(float), nValues,
 #                                  etl, initialPhase, 0, T1, T2, esp)
-#     s2 = bloch_fse.BlochFSEGibbons(flipsVariable.astype(float), nValues,
+#     s2 = blochsequence.BlochFSEGibbons(flipsVariable.astype(float), nValues,
 #                                    etl, initialPhase, 0, T1, T2, esp)
-#     s3 = bloch_fse.BlochFSELRX(nValues, etl, initialPhase, 0, T1, T2, espLRX)
+#     s3 = blochsequence.BlochFSELRX(nValues, etl, initialPhase, 0, T1, T2, espLRX)
     
 #     plt.subplot(2,2,counter)        
 #     p1, = plt.plot(abs(s1))
@@ -133,7 +137,7 @@ print "gibbons net magnetization: %f + j%f" % (np.mean(s2).real,np.mean(s2).imag
 #     counter += 1 
 # plt.savefig("muslce_simulation.pdf", bbox_inches='tight')           
 
-# sGibbons = bloch_fse.BlochFSEGibbons(flipsVariable.astype(float), nValues,
+# sGibbons = blochsequence.BlochFSEGibbons(flipsVariable.astype(float), nValues,
 #                                      etl, np.pi/4, 2, T1, T2, esp)
 
 # z = np.linspace(-3*5,3*5,nValues)
@@ -144,7 +148,7 @@ print "gibbons net magnetization: %f + j%f" % (np.mean(s2).real,np.mean(s2).imag
 # plt.ylim(-0.5, 1.1)
 # plt.title("Gibbons")
     
-# sCPMG = bloch_fse.BlochFSECPMG(flipsVariable.astype(float), nValues, etl, 0, T1, T2, esp)
+# sCPMG = blochsequence.BlochFSECPMG(flipsVariable.astype(float), nValues, etl, 0, T1, T2, esp)
 
 # plt.figure()
 # plt.plot(abs(sCPMG))
@@ -163,12 +167,12 @@ plt.show()
 # plt.plot(s1.imag)
 # plt.plot(s2.real)
 
-# sCPMG = bloch_fse.BlochFSECPMG(flipsVariable.astype(float), nValues, etl, 0, T1, T2, esp)
+# sCPMG = blochsequence.BlochFSECPMG(flipsVariable.astype(float), nValues, etl, 0, T1, T2, esp)
 
 # plt.plot(abs(sCPMG))
     
-# s2 = bloch_fse.BlochFSEAlsop(flipsVariable.astype(float), nValues, 1, initialPhase, 1, T1, T2, esp)
-# s3 = bloch_fse.BlochFSEAlsop(flipsVariable.astype(float), nValues, 1, initialPhase, 2, T1, T2, esp)
+# s2 = blochsequence.BlochFSEAlsop(flipsVariable.astype(float), nValues, 1, initialPhase, 1, T1, T2, esp)
+# s3 = blochsequence.BlochFSEAlsop(flipsVariable.astype(float), nValues, 1, initialPhase, 2, T1, T2, esp)
 
 
 # plt.figure()
