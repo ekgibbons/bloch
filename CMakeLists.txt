@@ -1,4 +1,4 @@
-set(LIBRARY_NAME "bloch_cardiac")
+set(LIBRARY_NAME "blochsequence")
 
 cmake_minimum_required(VERSION 2.8.12)
 project(${LIBRARY_NAME})
@@ -12,6 +12,8 @@ set(SOURCE_DIR "src")
 # Tell CMake that headers are also in SOURCE_DIR
 include_directories(${SOURCE_DIR})
 file(GLOB SOURCES "src/*.cpp")
+message(STATUS SOURCES)
+
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wconversion -O3")
 
@@ -26,5 +28,7 @@ pybind11_add_module(${LIBRARY_NAME} ${SOURCES})
 # set_target_properties(${LIBRARY_NAME} PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 target_link_libraries(${LIBRARY_NAME} PRIVATE ${ARMADILLO_LIBRARIES})
 
-
+# Install
+install(TARGETS ${LIBRARY_NAME} DESTINATION /home/mirl/egibbons/python_utils/mri)
+install(TARGETS ${LIBRARY_NAME} DESTINATION /home/mirl/egibbons/simulations/bloch_cardiac/python)
 

@@ -23,7 +23,7 @@
 
 namespace py = pybind11;
 
-np::array CArma2CNumpy(const arma::cx_vec &inputVec)
+py::array CArma2CNumpy(const arma::cx_vec &inputVec)
 {
 
     std::vector<std::complex<double>> tempVector(inputVec.n_elem);
@@ -42,6 +42,22 @@ np::array CArma2CNumpy(const arma::cx_vec &inputVec)
     			 )
 	);
     
+}
+
+
+arma::vec NumpyVec2ArmaVec(py::array_t<double> input)
+{
+    auto r = input.unchecked<1>();
+
+    arma::vec inputArma(input.shape(0));
+
+    for (unsigned int ii = 0; ii < input.shape(0); ii++)
+    {
+	inputArma(ii) = r(ii);
+
+    }
+
+    return inputArma;
 }
 
 

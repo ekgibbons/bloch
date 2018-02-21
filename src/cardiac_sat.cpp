@@ -23,7 +23,8 @@ double FloatMod(double firstTerm, double secondTerm)
 double CardiacMovement(double t, double heartRate)
 {
 
-    double beatLength, lengthSystole, tUse;
+    double beatLength, lengthSystole;
+    double tUse;
     double zSystoleEnd, z, amplitude;
 
     

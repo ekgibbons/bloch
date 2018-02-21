@@ -9,10 +9,10 @@
 #ifndef __NUMPY_WRAPPERS_HPP__
 #define  __NUMPY_WRAPPERS_HPP__
 
-namespace np = pybind11;
+namespace py = pybind11;
 
-np::array CArma2CNumpy(const arma::cx_vec &inputVec);
-
+py::array CArma2CNumpy(const arma::cx_vec &inputVec);
+arma::vec NumpyVec2ArmaVec(py::array_t<double> input);
 // np::ndarray Arma2Numpy(const arma::cx_mat &inputMat);
 // np::ndarray Arma2Numpy(const arma::cx_vec &inputVec);
 // arma::vec Numpy2ArmaVec(const np::ndarray &input);
