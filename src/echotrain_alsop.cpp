@@ -44,6 +44,8 @@ arma::cx_vec BlochFSEAlsop(const arma::vec &flips, unsigned int nValues, unsigne
     arma::cx_vec Mxy(nValues);
     arma::cx_vec Mz(nValues);
     arma::cx_vec s(etl);
+    arma::cx_vec out;
+
 
     for (unsigned int ii = 0; ii < nValues ; ii++)
     {
@@ -154,6 +156,28 @@ arma::cx_vec BlochFSEAlsop(const arma::vec &flips, unsigned int nValues, unsigne
     // HardPrecession(M, z, 2*M_PI*(areaRefocusingHide*0.58));    
     // HardPrecession(M, z, 2*M_PI*(areaRefocusingHide*0.53-areaDephase));
 
+    if (etl == 0)
+    {
+	for (unsigned int zIndex = 0; zIndex < nValues; zIndex++)
+	{
+	    Mxy(zIndex) = M(0,zIndex) + j*M(1,zIndex);
+	    Mz(zIndex) = M(2,zIndex);
+	}
+	
+	switch (returnType)
+	{
+	case MXY:
+	    out = Mxy;
+	    printf("\treturning: Mxy\n");
+	    break;
+	case MZ:
+	    out = Mz;
+	    printf("\treturning: Mz\n");
+	    break;
+	}
+
+	return out;
+    }
     
     // recover
     Relaxation(Relax,Recover,esp/2,T1,T2);
@@ -210,10 +234,6 @@ arma::cx_vec BlochFSEAlsop(const arma::vec &flips, unsigned int nValues, unsigne
 
 
     printf("\tsimulation complete\n");
-
-    
-    // output
-    arma::cx_vec out;
 
     switch (returnType)
     {

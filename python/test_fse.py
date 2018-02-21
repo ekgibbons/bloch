@@ -40,6 +40,7 @@ flipsVariable = flipsAlsop
 
 
 
+etl = 0
 initialPhase = np.pi/4
 
 s1 = blochsequence.FSEAlsop(flipsAlsop.astype(float), nValues,

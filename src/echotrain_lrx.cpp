@@ -26,7 +26,8 @@ arma::cx_vec BlochFSELRX(unsigned int nValues, unsigned int etl,  unsigned int p
     arma::cx_vec Mxy(nValues);
     arma::cx_vec Mz(nValues);
     arma::cx_vec s(etl);
-
+    arma::cx_vec out;
+    
     double sliceScaling = 0.4;
     
     for (unsigned int ii = 0; ii < nValues ; ii++)
@@ -168,8 +169,32 @@ arma::cx_vec BlochFSELRX(unsigned int nValues, unsigned int etl,  unsigned int p
     // Relaxation
     M = Relax*M + RecoverMat;
 
-    // start FSE stuff
+    if (etl == 0)
+    {
+	
+	
+	for (unsigned int zIndex = 0; zIndex < nValues; zIndex++)
+	{
+	    Mxy(zIndex) = M(0,zIndex) + j*M(1,zIndex);
+	    Mz(zIndex) = M(2,zIndex);
+	}
+	
+	switch (returnType)
+	{
+	case MXY:
+	    out = Mxy;
+	    printf("\treturning: Mxy\n");
+	    break;
+	case MZ:
+	    out = Mz;
+	    printf("\treturning: Mz\n");
+	    break;
+	}
 
+	return out;
+    }
+ 
+    // start FSE stuff
     Relaxation(Relax,Recover,esp/2,T1,T2);
     RecoverMat = arma::repmat(Recover,1,nValues);
     M = Relax*M + RecoverMat;
@@ -199,7 +224,7 @@ arma::cx_vec BlochFSELRX(unsigned int nValues, unsigned int etl,  unsigned int p
 
     printf("\tsimulation complete\n");
     
-    arma::cx_vec out;
+
 
     switch (returnType)
     {
